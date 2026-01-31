@@ -42,16 +42,21 @@ jobs:
             --self-contained true `
             --output ${{ env.Output_Dir }}/windows-${{ matrix.configuration }}
 
-    # Optional: Sign executable if you have secrets
     - name: Sign executable (optional)
-      if: secrets.Pfx_Key && secrets.Base64_Encoded_Pfx
       run: |
-        $pfx_bytes = [System.Convert]::FromBase64String("${{ secrets.Base64_Encoded_Pfx }}")
-        $pfx_path = "$env:RUNNER_TEMP\gnomicon.pfx"
-        [IO.File]::WriteAllBytes($pfx_path, $pfx_bytes)
-        $exe_path = "${{ env.Output_Dir }}/windows-${{ matrix.configuration }}/gnomicon.exe"
-        signtool sign /f $pfx_path /p "${{ secrets.Pfx_Key }}" /tr http://timestamp.digicert.com /td sha256 /fd sha256 $exe_path
-        Remove-Item $pfx_path
+        if ($env:PFX_KEY -and $env:BASE64_ENCODED_PFX) {
+            $pfx_bytes = [System.Convert]::FromBase64String("$env:BASE64_ENCODED_PFX")
+            $pfx_path = "$env:RUNNER_TEMP\gnomicon.pfx"
+            [IO.File]::WriteAllBytes($pfx_path, $pfx_bytes)
+            $exe_path = "${{ env.Output_Dir }}/windows-${{ matrix.configuration }}/gnomicon.exe"
+            signtool sign /f $pfx_path /p "$env:PFX_KEY" /tr http://timestamp.digicert.com /td sha256 /fd sha256 $exe_path
+            Remove-Item $pfx_path
+        } else {
+            Write-Host "Signing skipped: secrets not set."
+        }
+      env:
+        PFX_KEY: ${{ secrets.Pfx_Key }}
+        BASE64_ENCODED_PFX: ${{ secrets.Base64_Encoded_Pfx }}
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
