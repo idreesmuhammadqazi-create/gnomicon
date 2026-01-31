@@ -16,8 +16,8 @@ jobs:
     runs-on: windows-latest
 
     env:
-      Solution_Name: gnomicon.sln
-      Project_Name: gnomicon\gnomicon.csproj
+      Solution_Name: Gnomicon.sln
+      Project_Name: Gnomicon.csproj
       Output_Dir: build_artifacts
 
     steps:
@@ -28,6 +28,9 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
+
+    - name: Install Windows Desktop workload
+      run: dotnet workload install windowsdesktop
 
     - name: Restore dependencies
       run: dotnet restore ${{ env.Solution_Name }}
@@ -46,9 +49,9 @@ jobs:
       run: |
         if ($env:PFX_KEY -and $env:BASE64_ENCODED_PFX) {
             $pfx_bytes = [System.Convert]::FromBase64String("$env:BASE64_ENCODED_PFX")
-            $pfx_path = "$env:RUNNER_TEMP\gnomicon.pfx"
+            $pfx_path = "$env:RUNNER_TEMP\Gnomicon.pfx"
             [IO.File]::WriteAllBytes($pfx_path, $pfx_bytes)
-            $exe_path = "${{ env.Output_Dir }}/windows-${{ matrix.configuration }}/gnomicon.exe"
+            $exe_path = "${{ env.Output_Dir }}/windows-${{ matrix.configuration }}/Gnomicon.exe"
             signtool sign /f $pfx_path /p "$env:PFX_KEY" /tr http://timestamp.digicert.com /td sha256 /fd sha256 $exe_path
             Remove-Item $pfx_path
         } else {
