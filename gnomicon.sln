@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gnomicon", "Gnomicon.csproj", "{E8723031-8888-3D80-C35E-97F159EA06AB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E8723031-8888-3D80-C35E-97F159EA06AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8723031-8888-3D80-C35E-97F159EA06AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8723031-8888-3D80-C35E-97F159EA06AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8723031-8888-3D80-C35E-97F159EA06AB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {94A6EB99-4070-4589-959A-29C9481FEB7A}
+	EndGlobalSection
+EndGlobal
