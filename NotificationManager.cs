@@ -12,9 +12,6 @@ public class NotificationManager
         _notifyIcon = notifyIcon;
     }
 
-    /// <summary>
-    /// Shows a notification that icons have been rearranged.
-    /// </summary>
     public void ShowRearrangementNotification(RearrangementMode mode)
     {
         string title = "Gnomicon";
@@ -29,9 +26,6 @@ public class NotificationManager
         ShowNotification(title, message, ToolTipIcon.Info);
     }
 
-    /// <summary>
-    /// Shows a notification that the application has started.
-    /// </summary>
     public void ShowStartupNotification()
     {
         ShowNotification(
@@ -40,9 +34,6 @@ public class NotificationManager
             ToolTipIcon.Info);
     }
 
-    /// <summary>
-    /// Shows a notification that original positions have been restored.
-    /// </summary>
     public void ShowRestoreNotification()
     {
         ShowNotification(
@@ -51,9 +42,6 @@ public class NotificationManager
             ToolTipIcon.Info);
     }
 
-    /// <summary>
-    /// Shows a notification that the application is paused.
-    /// </summary>
     public void ShowPauseNotification(TimeSpan duration)
     {
         ShowNotification(
@@ -62,9 +50,6 @@ public class NotificationManager
             ToolTipIcon.Warning);
     }
 
-    /// <summary>
-    /// Shows a notification that the application has been resumed.
-    /// </summary>
     public void ShowResumeNotification()
     {
         ShowNotification(
@@ -73,9 +58,6 @@ public class NotificationManager
             ToolTipIcon.Info);
     }
 
-    /// <summary>
-    /// Shows a generic notification.
-    /// </summary>
     private void ShowNotification(string title, string message, ToolTipIcon icon)
     {
         if (_notifyIcon == null)
@@ -87,7 +69,6 @@ public class NotificationManager
         }
         catch
         {
-            // Ignore notification errors
         }
     }
 }

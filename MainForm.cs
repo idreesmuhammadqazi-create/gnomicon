@@ -1,11 +1,10 @@
 namespace Gnomicon;
 
 /// <summary>
-/// Main application form. This form is hidden and hosts the system tray icon.
+/// Main application form. Hidden form that hosts the system tray icon.
 /// </summary>
 public class MainForm : Form
 {
-    // Core components
     private readonly DesktopIconManager _iconManager;
     private readonly PositionValidator _positionValidator;
     private readonly RearrangementEngine _rearrangementEngine;
@@ -13,13 +12,11 @@ public class MainForm : Form
     private readonly SettingsManager _settingsManager;
     private NotificationManager? _notificationManager;
 
-    // UI components
     private NotifyIcon? _trayIcon;
     private ContextMenuStrip? _trayMenu;
     private System.Windows.Forms.Timer? _rearrangementTimer;
     private System.Windows.Forms.Timer? _pauseTimer;
 
-    // State
     private List<IconPosition> _currentPositions = new();
     private bool _isInitialized = false;
 
@@ -27,24 +24,21 @@ public class MainForm : Form
     {
         try
         {
-            // Initialize core components
             _iconManager = new DesktopIconManager();
             _positionValidator = new PositionValidator();
             _rearrangementEngine = new RearrangementEngine(_positionValidator);
             _fullscreenDetector = new FullscreenDetector();
             _settingsManager = new SettingsManager();
 
-            // Configure form to be completely hidden
             Text = "Gnomicon";
             WindowState = FormWindowState.Minimized;
             ShowInTaskbar = false;
             FormBorderStyle = FormBorderStyle.None;
             Size = new Size(0, 0);
             Opacity = 0;
-            Show();  // Show the form briefly to allow Load event to fire
+            Show();
             Hide();
 
-            // Initialize desktop icon manager
             if (!_iconManager.Initialize())
             {
                 MessageBox.Show(
@@ -58,7 +52,6 @@ public class MainForm : Form
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Warning);
                 
-                // Continue running but disabled
                 _settingsManager.Settings.IsEnabled = false;
             }
             else
@@ -66,20 +59,15 @@ public class MainForm : Form
                 _isInitialized = true;
             }
 
-            // Load settings
             _settingsManager.Load();
-
-            // Initialize UI
             InitializeTrayIcon();
             InitializeTimers();
 
-            // Save original positions on first run if not already saved
             if (_isInitialized && !_settingsManager.Settings.HasOriginalPositions)
             {
                 SaveCurrentPositionsAsOriginal();
             }
 
-            // Show startup notification
             if (_settingsManager.Settings.ShowNotifications)
             {
                 _notificationManager?.ShowStartupNotification();
@@ -95,17 +83,12 @@ public class MainForm : Form
         }
     }
 
-    /// <summary>
-    /// Initializes the system tray icon and context menu.
-    /// </summary>
     private void InitializeTrayIcon()
     {
         try
         {
-            // Create tray menu
             _trayMenu = new ContextMenuStrip();
             
-            // Status label (non-clickable)
             var statusLabel = new ToolStripMenuItem("Gnomicon - Active")
             {
                 Enabled = false,
@@ -114,24 +97,20 @@ public class MainForm : Form
             _trayMenu.Items.Add(statusLabel);
             _trayMenu.Items.Add(new ToolStripSeparator());
 
-            // Enable/Disable toggle
             var toggleItem = new ToolStripMenuItem("Enabled", null, OnToggleEnabled)
             {
                 Checked = _settingsManager.Settings.IsEnabled && !_settingsManager.Settings.IsPaused
             };
             _trayMenu.Items.Add(toggleItem);
 
-            // Pause for 1 hour
             var pauseItem = new ToolStripMenuItem("Pause for 1 hour", null, OnPauseOneHour);
             _trayMenu.Items.Add(pauseItem);
 
-            // Set interval
             var intervalItem = new ToolStripMenuItem($"Set Interval ({_settingsManager.Settings.IntervalMinutes} min)", null, OnSetInterval);
             _trayMenu.Items.Add(intervalItem);
 
             _trayMenu.Items.Add(new ToolStripSeparator());
 
-            // Mode submenu
             var modeMenu = new ToolStripMenuItem("Mode");
             foreach (RearrangementMode mode in Enum.GetValues(typeof(RearrangementMode)))
             {
@@ -146,20 +125,17 @@ public class MainForm : Form
 
             _trayMenu.Items.Add(new ToolStripSeparator());
 
-            // Restore original layout
             var restoreItem = new ToolStripMenuItem("Restore Original Layout", null, OnRestoreLayout)
             {
                 Enabled = _settingsManager.Settings.HasOriginalPositions
             };
             _trayMenu.Items.Add(restoreItem);
 
-            // Save current layout
             var saveItem = new ToolStripMenuItem("Save Current as Original", null, OnSaveCurrentLayout);
             _trayMenu.Items.Add(saveItem);
 
             _trayMenu.Items.Add(new ToolStripSeparator());
 
-            // Show notifications toggle
             var notifyItem = new ToolStripMenuItem("Show Notifications", null, OnToggleNotifications)
             {
                 Checked = _settingsManager.Settings.ShowNotifications
@@ -168,11 +144,9 @@ public class MainForm : Form
 
             _trayMenu.Items.Add(new ToolStripSeparator());
 
-            // Exit
             var exitItem = new ToolStripMenuItem("Exit", null, OnExit);
             _trayMenu.Items.Add(exitItem);
 
-            // Create tray icon
             _trayIcon = new NotifyIcon
             {
                 Text = "Gnomicon - Desktop Icon Rearranger",
@@ -182,11 +156,7 @@ public class MainForm : Form
             };
 
             _trayIcon.DoubleClick += OnTrayDoubleClick;
-
-            // Initialize notification manager
             _notificationManager = new NotificationManager(_trayIcon);
-
-            // Update menu state
             UpdateMenuState();
         }
         catch (Exception ex)
@@ -195,14 +165,10 @@ public class MainForm : Form
         }
     }
 
-    /// <summary>
-    /// Initializes the timers.
-    /// </summary>
     private void InitializeTimers()
     {
         try
         {
-            // Main rearrangement timer (60 minutes default)
             _rearrangementTimer = new System.Windows.Forms.Timer
             {
                 Interval = _settingsManager.Settings.IntervalMinutes * 60 * 1000
@@ -214,10 +180,9 @@ public class MainForm : Form
                 _rearrangementTimer.Start();
             }
 
-            // Pause timer (checks every minute for pause expiration)
             _pauseTimer = new System.Windows.Forms.Timer
             {
-                Interval = 60000 // 1 minute
+                Interval = 60000
             };
             _pauseTimer.Tick += OnPauseTimerTick;
             _pauseTimer.Start();
@@ -228,16 +193,12 @@ public class MainForm : Form
         }
     }
 
-    /// <summary>
-    /// Updates the menu items to reflect current state.
-    /// </summary>
     private void UpdateMenuState()
     {
         if (_trayMenu == null) return;
 
         try
         {
-            // Update status label
             var statusLabel = (ToolStripMenuItem)_trayMenu.Items[0];
             if (!_isInitialized)
             {
@@ -256,12 +217,10 @@ public class MainForm : Form
                 statusLabel.Text = "Gnomicon - Disabled";
             }
 
-            // Update toggle item
             var toggleItem = (ToolStripMenuItem)_trayMenu.Items[2];
             toggleItem.Checked = _settingsManager.Settings.IsEnabled && !_settingsManager.Settings.IsPaused;
             toggleItem.Text = _settingsManager.Settings.IsEnabled ? "Enabled" : "Disabled";
 
-            // Update mode items
             var modeMenu = (ToolStripMenuItem)_trayMenu.Items[5];
             foreach (ToolStripMenuItem modeItem in modeMenu.DropDownItems)
             {
@@ -271,7 +230,6 @@ public class MainForm : Form
                 }
             }
 
-            // Update restore item
             var restoreItem = (ToolStripMenuItem)_trayMenu.Items[7];
             restoreItem.Enabled = _settingsManager.Settings.HasOriginalPositions;
         }
@@ -281,9 +239,6 @@ public class MainForm : Form
         }
     }
 
-    /// <summary>
-    /// Saves the current icon positions as the original positions.
-    /// </summary>
     private void SaveCurrentPositionsAsOriginal()
     {
         try
@@ -298,38 +253,26 @@ public class MainForm : Form
         }
     }
 
-    /// <summary>
-    /// Performs the icon rearrangement.
-    /// </summary>
     private void PerformRearrangement()
     {
         try
         {
-            // Check if we should run
             if (!_settingsManager.Settings.IsEnabled || _settingsManager.Settings.IsPaused || !_isInitialized)
                 return;
 
-            // Check for fullscreen app
             if (_fullscreenDetector.IsFullscreenAppRunning())
-            {
-                // Skip this cycle if fullscreen app is running
                 return;
-            }
 
-            // Get current positions
             var currentPositions = _iconManager.GetAllIconPositions();
             if (currentPositions.Count == 0)
                 return;
 
-            // Perform rearrangement
             var newPositions = _rearrangementEngine.Rearrange(
                 currentPositions, 
                 _settingsManager.Settings.Mode);
 
-            // Apply new positions
             _iconManager.SetIconPositions(newPositions);
 
-            // Show notification
             if (_settingsManager.Settings.ShowNotifications)
             {
                 _notificationManager?.ShowRearrangementNotification(_settingsManager.Settings.Mode);
@@ -402,7 +345,6 @@ public class MainForm : Form
                 _settingsManager.Settings.IntervalMinutes = newInterval;
                 _settingsManager.Save();
                 
-                // Update timer interval
                 if (_rearrangementTimer != null)
                 {
                     bool wasRunning = _rearrangementTimer.Enabled;
@@ -531,7 +473,6 @@ public class MainForm : Form
 
     private void OnTrayDoubleClick(object? sender, EventArgs e)
     {
-        // Toggle enabled state on double-click
         OnToggleEnabled(sender, e);
     }
 
@@ -544,7 +485,6 @@ public class MainForm : Form
     {
         try
         {
-            // Check if pause has expired
             if (_settingsManager.Settings.IsPaused)
             {
                 UpdateMenuState();
@@ -555,7 +495,6 @@ public class MainForm : Form
                      !_rearrangementTimer.Enabled &&
                      _isInitialized)
             {
-                // Pause expired, resume
                 _rearrangementTimer.Start();
                 
                 if (_settingsManager.Settings.ShowNotifications)

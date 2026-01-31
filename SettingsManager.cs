@@ -11,19 +11,9 @@ public class SettingsManager
     private readonly string _settingsFilePath;
     private readonly object _lockObject = new();
 
-    /// <summary>
-    /// Gets the current application settings.
-    /// </summary>
     public AppSettings Settings { get; private set; }
 
-    /// <summary>
-    /// Event raised when settings are saved.
-    /// </summary>
     public event EventHandler? SettingsSaved;
-
-    /// <summary>
-    /// Event raised when settings are loaded.
-    /// </summary>
     public event EventHandler? SettingsLoaded;
 
     public SettingsManager()
@@ -35,10 +25,6 @@ public class SettingsManager
         Settings = new AppSettings();
     }
 
-    /// <summary>
-    /// Loads settings from the configuration file.
-    /// Creates default settings if the file doesn't exist.
-    /// </summary>
     public void Load()
     {
         lock (_lockObject)
@@ -60,14 +46,12 @@ public class SettingsManager
                 }
                 else
                 {
-                    // First run - create directory and save defaults
                     Directory.CreateDirectory(_settingsDirectory);
                     Save();
                 }
             }
             catch (Exception ex)
             {
-                // Log error but continue with defaults
                 System.Diagnostics.Debug.WriteLine($"Error loading settings: {ex.Message}");
             }
         }
@@ -75,9 +59,6 @@ public class SettingsManager
         SettingsLoaded?.Invoke(this, EventArgs.Empty);
     }
 
-    /// <summary>
-    /// Saves the current settings to the configuration file.
-    /// </summary>
     public void Save()
     {
         lock (_lockObject)
@@ -102,9 +83,6 @@ public class SettingsManager
         SettingsSaved?.Invoke(this, EventArgs.Empty);
     }
 
-    /// <summary>
-    /// Gets the full path to the settings file.
-    /// </summary>
     public string GetSettingsFilePath()
     {
         return _settingsFilePath;

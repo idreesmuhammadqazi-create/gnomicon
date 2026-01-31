@@ -1,16 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+  <!-- Yo! This is the Gnomicon project file - where we configure our chaos machine -->
+  <!-- Built with .NET 8 and Windows Forms, because why not? -->
+
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    
+    <!-- Single file publish settings - one exe to rule them all! -->
     <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>true</SelfContained>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
   </PropertyGroup>
 
+  <!-- Dependencies - because we didn't want to write everything from scratch -->
   <ItemGroup>
     <PackageReference Include="System.Text.Json" Version="8.0.5" />
   </ItemGroup>

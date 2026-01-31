@@ -14,9 +14,6 @@ public class RearrangementEngine
         _random = new Random();
     }
 
-    /// <summary>
-    /// Rearranges icons according to the specified mode.
-    /// </summary>
     public List<IconPosition> Rearrange(List<IconPosition> currentPositions, RearrangementMode mode)
     {
         return mode switch
@@ -28,9 +25,6 @@ public class RearrangementEngine
         };
     }
 
-    /// <summary>
-    /// Full Chaos mode: Randomizes all icon positions within the visible screen area.
-    /// </summary>
     private List<IconPosition> FullChaos(List<IconPosition> positions)
     {
         var newPositions = new List<IconPosition>();
@@ -44,13 +38,9 @@ public class RearrangementEngine
             newPositions.Add(newPos);
         }
 
-        // Prevent overlaps
         return _validator.PreventOverlaps(newPositions, 60);
     }
 
-    /// <summary>
-    /// Sneaky mode: Randomly swaps only 2-4 icon positions.
-    /// </summary>
     private List<IconPosition> Sneaky(List<IconPosition> positions)
     {
         if (positions.Count < 2)
@@ -58,10 +48,8 @@ public class RearrangementEngine
 
         var newPositions = positions.Select(p => p.Clone()).ToList();
         
-        // Determine how many swaps to make (2-4 icons affected)
         int swapCount = Math.Min(_random.Next(2, 5), positions.Count / 2);
         
-        // Create a list of indices to swap
         var indices = Enumerable.Range(0, positions.Count).ToList();
         
         for (int i = 0; i < swapCount; i++)
@@ -69,7 +57,6 @@ public class RearrangementEngine
             if (indices.Count < 2)
                 break;
 
-            // Pick two random indices
             int idx1 = _random.Next(indices.Count);
             int index1 = indices[idx1];
             indices.RemoveAt(idx1);
@@ -78,7 +65,6 @@ public class RearrangementEngine
             int index2 = indices[idx2];
             indices.RemoveAt(idx2);
 
-            // Swap their positions
             int tempX = newPositions[index1].X;
             int tempY = newPositions[index1].Y;
             
@@ -92,9 +78,6 @@ public class RearrangementEngine
         return newPositions;
     }
 
-    /// <summary>
-    /// Orbit mode: Rotates icons in a slow circular pattern around the screen center.
-    /// </summary>
     private List<IconPosition> Orbit(List<IconPosition> positions)
     {
         if (positions.Count == 0)
@@ -104,29 +87,24 @@ public class RearrangementEngine
         int centerX = safeArea.Left + safeArea.Width / 2;
         int centerY = safeArea.Top + safeArea.Height / 2;
 
-        // Calculate the orbit radius based on screen size
         int maxRadius = Math.Min(safeArea.Width, safeArea.Height) / 3;
         
         var newPositions = new List<IconPosition>();
         
-        // Distribute icons evenly around the circle
         double angleStep = 2 * Math.PI / positions.Count;
-        double baseAngle = _random.NextDouble() * 2 * Math.PI; // Random starting rotation
+        double baseAngle = _random.NextDouble() * 2 * Math.PI;
 
         for (int i = 0; i < positions.Count; i++)
         {
             var pos = positions[i].Clone();
             
-            // Calculate position on the circle
             double angle = baseAngle + (i * angleStep);
             
-            // Vary the radius slightly for each icon to create a more natural look
-            int radius = maxRadius - (i % 3) * 30; // 3 concentric rings
+            int radius = maxRadius - (i % 3) * 30;
             
-            int newX = centerX + (int)(radius * Math.Cos(angle)) - 24; // Center the icon
+            int newX = centerX + (int)(radius * Math.Cos(angle)) - 24;
             int newY = centerY + (int)(radius * Math.Sin(angle)) - 24;
             
-            // Validate and clamp to safe area
             var validated = _validator.ValidatePosition(newX, newY);
             pos.X = validated.X;
             pos.Y = validated.Y;
@@ -137,9 +115,6 @@ public class RearrangementEngine
         return newPositions;
     }
 
-    /// <summary>
-    /// Gets a description of what the next rearrangement will do.
-    /// </summary>
     public string GetRearrangementDescription(RearrangementMode mode, int iconCount)
     {
         return mode switch

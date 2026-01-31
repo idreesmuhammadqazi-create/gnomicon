@@ -7,7 +7,6 @@ namespace Gnomicon;
 /// </summary>
 public class FullscreenDetector
 {
-    // Windows API imports
     [DllImport("user32.dll")]
     private static extern IntPtr GetForegroundWindow();
 
@@ -43,17 +42,12 @@ public class FullscreenDetector
         QUNS_APP = 7
     }
 
-    /// <summary>
-    /// Checks if a fullscreen application is currently active.
-    /// Uses multiple detection methods for reliability.
-    /// </summary>
     public bool IsFullscreenAppRunning()
     {
-        // Method 1: Use SHQueryUserNotificationState (most reliable for games/media)
         try
         {
             int result = SHQueryUserNotificationState(out QUERY_USER_NOTIFICATION_STATE state);
-            if (result == 0) // S_OK
+            if (result == 0)
             {
                 if (state == QUERY_USER_NOTIFICATION_STATE.QUNS_RUNNING_D3D_FULL_SCREEN ||
                     state == QUERY_USER_NOTIFICATION_STATE.QUNS_BUSY ||
@@ -65,16 +59,11 @@ public class FullscreenDetector
         }
         catch
         {
-            // Fallback to method 2 if this API fails
         }
 
-        // Method 2: Check if foreground window covers the entire screen
         return IsForegroundWindowFullscreen();
     }
 
-    /// <summary>
-    /// Checks if the foreground window is covering the entire primary screen.
-    /// </summary>
     private bool IsForegroundWindowFullscreen()
     {
         IntPtr foregroundWindow = GetForegroundWindow();
@@ -88,18 +77,15 @@ public class FullscreenDetector
         if (!GetWindowRect(foregroundWindow, out RECT windowRect))
             return false;
 
-        // Get the primary screen bounds
         var primaryScreen = Screen.PrimaryScreen;
         if (primaryScreen == null)
             return false;
 
         var screenBounds = primaryScreen.Bounds;
 
-        // Calculate window dimensions
         int windowWidth = windowRect.Right - windowRect.Left;
         int windowHeight = windowRect.Bottom - windowRect.Top;
 
-        // Check if window covers the entire screen (with small tolerance for borders)
         const int tolerance = 10;
         bool coversScreen = 
             Math.Abs(windowRect.Left - screenBounds.Left) <= tolerance &&
@@ -110,9 +96,6 @@ public class FullscreenDetector
         return coversScreen;
     }
 
-    /// <summary>
-    /// Gets information about the current fullscreen state for debugging.
-    /// </summary>
     public string GetFullscreenStateInfo()
     {
         try

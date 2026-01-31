@@ -5,22 +5,18 @@ namespace Gnomicon;
 
 /// <summary>
 /// Manages desktop icon positions using Windows API calls.
-/// This class interacts with the desktop ListView control (SysListView32) to read and modify icon positions.
 /// </summary>
 public class DesktopIconManager
 {
-    // Windows API Constants
     private const int LVM_FIRST = 0x1000;
     private const int LVM_GETITEMCOUNT = LVM_FIRST + 4;
     private const int LVM_GETITEMPOSITION = LVM_FIRST + 16;
     private const int LVM_SETITEMPOSITION = LVM_FIRST + 15;
     private const int LVM_GETITEMTEXT = LVM_FIRST + 45;
     
-    // Windows Messages
     private const uint WM_GETTEXT = 0x000D;
     private const uint WM_GETTEXTLENGTH = 0x000E;
 
-    // Process access flags
     private const uint PROCESS_VM_OPERATION = 0x0008;
     private const uint PROCESS_VM_READ = 0x0010;
     private const uint PROCESS_VM_WRITE = 0x0020;
@@ -28,7 +24,6 @@ public class DesktopIconManager
     private const uint MEM_RELEASE = 0x8000;
     private const uint PAGE_READWRITE = 0x04;
 
-    // Windows API Imports
     [DllImport("user32.dll", SetLastError = true)]
     private static extern IntPtr FindWindow(string lpClassName, string? lpWindowName);
 
@@ -93,9 +88,6 @@ public class DesktopIconManager
     private IntPtr _desktopHandle = IntPtr.Zero;
     private uint _desktopProcessId = 0;
 
-    /// <summary>
-    /// Gets the handle to the desktop ListView window.
-    /// </summary>
     public bool Initialize()
     {
         _desktopHandle = GetDesktopListViewHandle();
@@ -106,13 +98,8 @@ public class DesktopIconManager
         return _desktopProcessId != 0;
     }
 
-    /// <summary>
-    /// Finds the desktop ListView window handle.
-    /// The desktop is a SysListView32 control inside Progman/SHELLDLL_DefView.
-    /// </summary>
     private IntPtr GetDesktopListViewHandle()
     {
-        // Method 1: Try the classic Progman approach
         IntPtr progman = FindWindow("Progman", null);
         if (progman != IntPtr.Zero)
         {
@@ -125,7 +112,6 @@ public class DesktopIconManager
             }
         }
 
-        // Method 2: Try the WorkerW approach (Windows 10/11)
         IntPtr workerW = IntPtr.Zero;
         do
         {
@@ -145,9 +131,6 @@ public class DesktopIconManager
         return IntPtr.Zero;
     }
 
-    /// <summary>
-    /// Gets the number of desktop icons.
-    /// </summary>
     public int GetIconCount()
     {
         if (_desktopHandle == IntPtr.Zero)
@@ -156,9 +139,6 @@ public class DesktopIconManager
         return SendMessage(_desktopHandle, LVM_GETITEMCOUNT, 0, 0);
     }
 
-    /// <summary>
-    /// Gets the position of a specific icon.
-    /// </summary>
     public IconPosition? GetIconPosition(int index)
     {
         if (_desktopHandle == IntPtr.Zero || _desktopProcessId == 0)
@@ -170,19 +150,16 @@ public class DesktopIconManager
 
         try
         {
-            // Allocate memory in the desktop process for the POINT structure
             IntPtr remotePoint = VirtualAllocEx(hProcess, IntPtr.Zero, (uint)Marshal.SizeOf<POINT>(), MEM_COMMIT, PAGE_READWRITE);
             if (remotePoint == IntPtr.Zero)
                 return null;
 
             try
             {
-                // Send message to get item position
                 int result = SendMessage(_desktopHandle, LVM_GETITEMPOSITION, index, remotePoint);
                 if (result == 0)
                     return null;
 
-                // Read the position from the remote process memory
                 POINT point;
                 if (!ReadProcessMemory(hProcess, remotePoint, out point, (uint)Marshal.SizeOf<POINT>(), out _))
                     return null;
@@ -205,24 +182,17 @@ public class DesktopIconManager
         }
     }
 
-    /// <summary>
-    /// Sets the position of a specific icon.
-    /// </summary>
     public bool SetIconPosition(int index, int x, int y)
     {
         if (_desktopHandle == IntPtr.Zero)
             return false;
 
-        // LVM_SETITEMPOSITION uses MAKELPARAM to pack x and y into lParam
         int lParam = (y << 16) | (x & 0xFFFF);
         int result = SendMessage(_desktopHandle, LVM_SETITEMPOSITION, index, lParam);
         
         return result != 0;
     }
 
-    /// <summary>
-    /// Gets all icon positions.
-    /// </summary>
     public List<IconPosition> GetAllIconPositions()
     {
         var positions = new List<IconPosition>();
@@ -240,9 +210,6 @@ public class DesktopIconManager
         return positions;
     }
 
-    /// <summary>
-    /// Sets multiple icon positions.
-    /// </summary>
     public void SetIconPositions(List<IconPosition> positions)
     {
         foreach (var pos in positions)
@@ -251,9 +218,6 @@ public class DesktopIconManager
         }
     }
 
-    /// <summary>
-    /// Refreshes the desktop handle (useful if desktop is recreated).
-    /// </summary>
     public void Refresh()
     {
         Initialize();

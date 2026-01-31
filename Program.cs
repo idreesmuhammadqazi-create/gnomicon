@@ -11,7 +11,6 @@ internal static class Program
     [STAThread]
     static void Main()
     {
-        // Ensure only one instance runs
         using var mutex = new Mutex(true, "Gnomicon_SingleInstance", out bool createdNew);
         
         if (!createdNew)
@@ -25,10 +24,8 @@ internal static class Program
             return;
         }
 
-        // Configure Windows Forms application
         ApplicationConfiguration.Initialize();
         
-        // Run the main form
         using var form = new MainForm();
         Application.Run(form);
     }
