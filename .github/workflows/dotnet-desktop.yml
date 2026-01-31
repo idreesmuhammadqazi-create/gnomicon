@@ -1,0 +1,60 @@
+name: Build Gnomicon Desktop App
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    strategy:
+      matrix:
+        configuration: [Debug, Release]
+
+    runs-on: windows-latest
+
+    env:
+      Solution_Name: gnomicon.sln
+      Project_Name: gnomicon\gnomicon.csproj
+      Output_Dir: build_artifacts
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore ${{ env.Solution_Name }}
+
+    - name: Build project
+      run: dotnet build ${{ env.Project_Name }} --configuration ${{ matrix.configuration }} --no-restore
+
+    - name: Publish self-contained exe
+      run: dotnet publish ${{ env.Project_Name }} `
+            --configuration ${{ matrix.configuration }} `
+            --runtime win-x64 `
+            --self-contained true `
+            --output ${{ env.Output_Dir }}/windows-${{ matrix.configuration }}
+
+    # Optional: Sign executable if you have secrets
+    - name: Sign executable (optional)
+      if: secrets.Pfx_Key && secrets.Base64_Encoded_Pfx
+      run: |
+        $pfx_bytes = [System.Convert]::FromBase64String("${{ secrets.Base64_Encoded_Pfx }}")
+        $pfx_path = "$env:RUNNER_TEMP\gnomicon.pfx"
+        [IO.File]::WriteAllBytes($pfx_path, $pfx_bytes)
+        $exe_path = "${{ env.Output_Dir }}/windows-${{ matrix.configuration }}/gnomicon.exe"
+        signtool sign /f $pfx_path /p "${{ secrets.Pfx_Key }}" /tr http://timestamp.digicert.com /td sha256 /fd sha256 $exe_path
+        Remove-Item $pfx_path
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: Gnomicon-${{ matrix.configuration }}
+        path: ${{ env.Output_Dir }}/windows-${{ matrix.configuration }}
