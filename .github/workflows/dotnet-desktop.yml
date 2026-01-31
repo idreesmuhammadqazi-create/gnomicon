@@ -21,27 +21,33 @@ jobs:
       Output_Dir: build_artifacts
 
     steps:
+    # Step 1: Checkout repo
     - name: Checkout repository
       uses: actions/checkout@v4
 
+    # Step 2: Setup .NET 8
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
 
+    # Step 3: Restore dependencies (includes System.Text.Json)
     - name: Restore dependencies
       run: dotnet restore ${{ env.Solution_Name }}
 
+    # Step 4: Build project
     - name: Build project
       run: dotnet build ${{ env.Project_Name }} --configuration ${{ matrix.configuration }} --no-restore
 
-    - name: Publish self-contained exe
+    # Step 5: Publish self-contained single-file exe
+    - name: Publish exe
       run: dotnet publish ${{ env.Project_Name }} `
             --configuration ${{ matrix.configuration }} `
             --runtime win-x64 `
             --self-contained true `
             --output ${{ env.Output_Dir }}/windows-${{ matrix.configuration }}
 
+    # Step 6: Optional signing
     - name: Sign executable (optional)
       run: |
         if ($env:PFX_KEY -and $env:BASE64_ENCODED_PFX) {
@@ -58,6 +64,7 @@ jobs:
         PFX_KEY: ${{ secrets.Pfx_Key }}
         BASE64_ENCODED_PFX: ${{ secrets.Base64_Encoded_Pfx }}
 
+    # Step 7: Upload artifacts for download
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
