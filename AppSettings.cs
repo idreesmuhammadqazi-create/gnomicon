@@ -1,4 +1,4 @@
-using System.Text.JsonSerialization;
+using System.Text.Json.Serialization;
 
 namespace Gnomicon;
 
