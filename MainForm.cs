@@ -221,7 +221,7 @@ public class MainForm : Form
             toggleItem.Checked = _settingsManager.Settings.IsEnabled && !_settingsManager.Settings.IsPaused;
             toggleItem.Text = _settingsManager.Settings.IsEnabled ? "Enabled" : "Disabled";
 
-            var modeMenu = (ToolStripMenuItem)_trayMenu.Items[5];
+            var modeMenu = (ToolStripMenuItem)_trayMenu.Items[6];
             foreach (ToolStripMenuItem modeItem in modeMenu.DropDownItems)
             {
                 if (modeItem.Tag is RearrangementMode mode)
@@ -230,7 +230,8 @@ public class MainForm : Form
                 }
             }
 
-            var restoreItem = (ToolStripMenuItem)_trayMenu.Items[7];
+            var restoreItem = (ToolStripMenuItem)_trayMenu.Items[8];
+            System.Diagnostics.Debug.WriteLine($"DEBUG: HasOriginalPositions = {_settingsManager.Settings.HasOriginalPositions}, Count = {_settingsManager.Settings.OriginalPositions.Count}");
             restoreItem.Enabled = _settingsManager.Settings.HasOriginalPositions;
         }
         catch (Exception ex)
