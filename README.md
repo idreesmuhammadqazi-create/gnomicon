@@ -79,7 +79,7 @@ The Windows desktop is actually a **ListView control** (class name: `SysListView
 
 1. **Clone or extract the source code**:
    ```cmd
-   cd c:\Users\Kids\Documents\GitHub\gnomicon
+   git clone https://github.com/idreesmuhammadqazi-create/gnomicon.git
    ```
 
 2. **Build the project**:
@@ -103,7 +103,7 @@ The Windows desktop is actually a **ListView control** (class name: `SysListView
 To create a standalone executable:
 
 ```cmd
-dotnet publish -c Release -r win-x64 --self-contained false /p:PublishSingleFile=true
+dotnet publish -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true
 ```
 
 The executable will be in:
@@ -228,7 +228,6 @@ Made with C# and Windows Forms, using P/Invoke for Windows API access.
 
 Built with C# and Windows Forms, using P/Invoke for Windows API access.
 
-**Created by**: A 15-year-old coder with too much free time and a sense of humor!
 
 ---
 
