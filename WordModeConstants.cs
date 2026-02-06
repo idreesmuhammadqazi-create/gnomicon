@@ -6,57 +6,34 @@ namespace Gnomicon;
 public static class WordModeConstants
 {
     /// <summary>
-    /// Fun words that can be spelled with desktop icons.
+    /// 3-letter fun words that are easy to recognize.
     /// </summary>
     public static readonly string[] FunWords = new[]
     {
-        "LOL", "LMAO", "WOW", "OK", "HI", "BYE", "YES", "NO",
-        "HAHA", "OMG", "WIN", "FAIL", "NICE", "COOL", "CUTE",
-        "EPIC", "BOSS", "GGWP", "FTW", "MVP", "LOVE", "HATE",
-        "GOOD", "BAD", "HOT", "SAD", "MAD", "FUN", "GAME",
-        "GEEK", "NERD", "PRO", "TOP", "BIG", "NEW", "DAY",
-        "SUN", "SKY", "RED", "BLUE", "ALL", "OUT", "RUN"
+        "LOL", "WOW", "OK", "HI", "BYE", "YES", "NO",
+        "WIN","BAD",  "SAD", "MAD", "FUN"
     };
 
     /// <summary>
-    /// Icon grid patterns for each letter using (row, col) coordinates.
-    /// Each letter is designed to be recognizable with minimal icons.
+    /// Simple, bold letter patterns that are easy to recognize from a distance.
+    /// Each letter uses 3x3 or 3x4 grids for optimal clarity.
     /// </summary>
     public static readonly Dictionary<char, List<(int Row, int Col)>> LetterPatterns = new()
     {
-        // Simple letters (3 icons)
-        ['I'] = new() { (0, 1), (1, 1), (2, 1) },
-        ['L'] = new() { (0, 0), (1, 0), (2, 0), (2, 1), (2, 2) },
-        ['T'] = new() { (0, 0), (0, 1), (0, 2), (1, 1), (2, 1) },
+        // 3x3 grid letters (simple and bold)
+        ['I'] = new() { (0, 1), (1, 1), (2, 1) }, // Vertical line
+        ['L'] = new() { (0, 0), (1, 0), (2, 0), (2, 1), (2, 2) }, // Vertical line with horizontal base
+        ['T'] = new() { (0, 0), (0, 1), (0, 2), (1, 1), (2, 1) }, // Horizontal top with vertical stem
+        ['O'] = new() { (0, 1), (0, 2), (1, 0), (1, 3), (2, 0), (2, 3), (3, 0), (3, 3), (4, 1), (4, 2) }, // Hollow square (O shape)
+        ['X'] = new() { (0, 0), (0, 3), (1, 1), (1, 2), (2, 0), (2, 3), (3, 1), (3, 2), (4, 0), (4, 3) }, // Cross pattern
         
-        // Medium letters (4-5 icons)
-        ['A'] = new() { (0, 1), (1, 0), (1, 2), (2, 0), (2, 1), (2, 2) },
-        ['C'] = new() { (0, 1), (0, 2), (1, 0), (2, 0), (2, 1), (2, 2) },
-        ['E'] = new() { (0, 0), (0, 1), (0, 2), (1, 0), (2, 0), (2, 1), (2, 2) },
-        ['F'] = new() { (0, 0), (0, 1), (0, 2), (1, 0), (2, 0), (2, 1) },
-        ['H'] = new() { (0, 0), (1, 0), (2, 0), (0, 2), (1, 2), (2, 2) },
-        ['J'] = new() { (0, 1), (0, 2), (1, 2), (2, 0), (2, 1), (2, 2) },
-        ['K'] = new() { (0, 0), (1, 0), (2, 0), (1, 1), (1, 2) },
-        ['N'] = new() { (0, 0), (1, 0), (1, 1), (1, 2), (2, 2), (3, 2) },
-        ['O'] = new() { (0, 1), (0, 2), (1, 0), (1, 3), (2, 0), (2, 3), (3, 1), (3, 2) },
-        ['P'] = new() { (0, 0), (0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1) },
-        ['S'] = new() { (0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1) },
-        ['U'] = new() { (0, 0), (1, 0), (2, 0), (2, 1), (2, 2), (3, 2) },
-        ['V'] = new() { (0, 0), (1, 0), (2, 1), (3, 2), (4, 2) },
-        ['W'] = new() { (0, 0), (1, 0), (2, 1), (3, 2), (4, 2), (4, 3) },
-        ['X'] = new() { (0, 0), (0, 3), (1, 1), (1, 2), (2, 1), (2, 2), (3, 0), (3, 3) },
-        ['Y'] = new() { (0, 0), (0, 3), (1, 1), (1, 2), (2, 1), (3, 1), (4, 1) },
-        ['Z'] = new() { (0, 0), (0, 1), (0, 2), (1, 2), (2, 0), (2, 1), (2, 2) },
-        
-        // Letters with descenders
-        ['G'] = new() { (0, 1), (0, 2), (1, 0), (1, 3), (2, 0), (2, 2), (2, 3), (3, 2) },
-        ['Q'] = new() { (0, 1), (0, 2), (1, 0), (1, 3), (2, 0), (2, 3), (3, 1), (3, 2), (3, 3) },
-        ['R'] = new() { (0, 0), (0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1), (3, 2) },
-        
-        // Complex letters (more icons for clarity)
-        ['B'] = new() { (0, 0), (0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1), (2, 2), (3, 0), (3, 1), (3, 2), (4, 0), (4, 1) },
-        ['D'] = new() { (0, 0), (0, 1), (0, 2), (1, 0), (1, 3), (2, 0), (2, 3), (3, 0), (3, 1), (3, 2), (4, 0), (4, 1) },
-        ['M'] = new() { (0, 0), (0, 5), (1, 0), (1, 2), (1, 3), (1, 5), (2, 0), (2, 1), (2, 4), (2, 5), (3, 0), (3, 5), (4, 0), (4, 5) },
+        // 3x4 grid letters (medium complexity)
+        ['A'] = new() { (0, 1), (0, 2), (1, 0), (1, 3), (2, 0), (2, 1), (2, 2), (2, 3), (3, 0), (3, 3), (4, 1), (4, 2) }, // Triangular shape
+        ['E'] = new() { (0, 0), (0, 1), (0, 2), (0, 3), (1, 0), (2, 0), (2, 1), (2, 2), (3, 0), (4, 0), (4, 1), (4, 2), (4, 3) }, // Three horizontal lines
+        ['F'] = new() { (0, 0), (0, 1), (0, 2), (0, 3), (1, 0), (2, 0), (2, 1), (2, 2), (3, 0) }, // Two horizontal lines
+        ['H'] = new() { (0, 0), (1, 0), (2, 0), (3, 0), (4, 0), (0, 3), (1, 3), (2, 3), (3, 3), (4, 3), (2, 1), (2, 2) }, // Two vertical lines with crossbar
+        ['N'] = new() { (0, 0), (1, 0), (2, 0), (3, 0), (4, 0), (0, 3), (1, 3), (2, 3), (3, 3), (4, 3), (1, 1), (2, 2), (3, 1) }, // Diagonal bridge
+        ['S'] = new() { (0, 1), (0, 2), (1, 0), (1, 3), (2, 0), (2, 1), (2, 2), (2, 3), (3, 0), (3, 3), (4, 1), (4, 2) }, // S curve shape
     };
 
     /// <summary>
@@ -64,22 +41,22 @@ public static class WordModeConstants
     /// </summary>
     public static Dictionary<char, int> IconCounts { get; } = new()
     {
-        ['A'] = 6, ['B'] = 13, ['C'] = 6, ['D'] = 11, ['E'] = 7,
-        ['F'] = 6, ['G'] = 8, ['H'] = 6, ['I'] = 3, ['J'] = 6,
-        ['K'] = 5, ['L'] = 5, ['M'] = 14, ['N'] = 6, ['O'] = 8,
-        ['P'] = 7, ['Q'] = 9, ['R'] = 8, ['S'] = 6, ['T'] = 5,
-        ['U'] = 6, ['V'] = 5, ['W'] = 6, ['X'] = 8, ['Y'] = 7,
-        ['Z'] = 7
+        ['A'] = 12, ['B'] = 10, ['C'] = 8, ['D'] = 10, ['E'] = 14,
+        ['F'] = 10, ['G'] = 10, ['H'] = 12, ['I'] = 3, ['J'] = 8,
+        ['K'] = 10, ['L'] = 5, ['M'] = 20, ['N'] = 14, ['O'] = 10,
+        ['P'] = 10, ['Q'] = 10, ['R'] = 10, ['S'] = 12, ['T'] = 5,
+        ['U'] = 10, ['V'] = 8, ['W'] = 14, ['X'] = 10, ['Y'] = 8,
+        ['Z'] = 10
     };
 
     /// <summary>
-    /// Configuration for icon grid layout.
+    /// Configuration for icon grid layout. Using larger spacing for better visibility.
     /// </summary>
     public static class GridConfig
     {
-        public static int IconSpacing { get; set; } = 60;
-        public static int LetterSpacing { get; set; } = 40;
-        public static int RowHeight { get; set; } = 60;
+        public static int IconSpacing { get; set; } = 80; // Larger spacing for better visibility
+        public static int LetterSpacing { get; set; } = 60; // More space between letters
+        public static int RowHeight { get; set; } = 80; // Larger vertical spacing
         public static int StartX { get; set; } = 100;
         public static int StartY { get; set; } = 200;
     }
