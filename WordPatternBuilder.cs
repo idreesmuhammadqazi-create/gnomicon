@@ -42,7 +42,7 @@ public class WordPatternBuilder
         var safeArea = _validator.GetSafeWorkingArea();
         int wordWidth = CalculateWordWidth(wordUpper);
         int startX = Math.Max(safeArea.Left, (safeArea.Width - wordWidth) / 2);
-        int startY = Math.Max(safeArea.Top, (safeArea.Height - GridConfig.RowHeight) / 2);
+        int startY = Math.Max(safeArea.Top, (safeArea.Height - WordModeConstants.GridConfig.RowHeight) / 2);
 
         int currentX = startX;
         int iconIndex = 0;
@@ -51,7 +51,7 @@ public class WordPatternBuilder
         {
             if (!WordModeConstants.LetterPatterns.TryGetValue(letter, out var pattern))
             {
-                currentX += GridConfig.LetterSpacing;
+                currentX += WordModeConstants.GridConfig.LetterSpacing;
                 continue;
             }
 
@@ -61,8 +61,8 @@ public class WordPatternBuilder
                     break;
 
                 var pos = allPositions[iconIndex].Clone();
-                pos.X = currentX + (col * GridConfig.IconSpacing);
-                pos.Y = startY + (row * GridConfig.IconSpacing);
+                pos.X = currentX + (col * WordModeConstants.GridConfig.IconSpacing);
+                pos.Y = startY + (row * WordModeConstants.GridConfig.IconSpacing);
                 
                 var validated = _validator.ValidatePosition(pos.X, pos.Y);
                 pos.X = validated.X;
@@ -72,7 +72,7 @@ public class WordPatternBuilder
                 iconIndex++;
             }
 
-            currentX += GridConfig.LetterSpacing + (pattern.Max(p => p.Col) * GridConfig.IconSpacing);
+            currentX += WordModeConstants.GridConfig.LetterSpacing + (pattern.Max(p => p.Col) * WordModeConstants.GridConfig.IconSpacing);
         }
 
         // Collect remaining icons as extras
@@ -132,11 +132,11 @@ public class WordPatternBuilder
         {
             if (WordModeConstants.LetterPatterns.TryGetValue(letter, out var pattern))
             {
-                var letterWidth = (pattern.Max(p => p.Col) + 1) * GridConfig.IconSpacing;
-                width += letterWidth + GridConfig.LetterSpacing;
+                var letterWidth = (pattern.Max(p => p.Col) + 1) * WordModeConstants.GridConfig.IconSpacing;
+                width += letterWidth + WordModeConstants.GridConfig.LetterSpacing;
             }
         }
-        return Math.Max(0, width - GridConfig.LetterSpacing); // Remove last letter spacing
+        return Math.Max(0, width - WordModeConstants.GridConfig.LetterSpacing); // Remove last letter spacing
     }
 
     /// <summary>
@@ -150,8 +150,8 @@ public class WordPatternBuilder
         foreach (var pos in extraPositions)
         {
             var newPos = pos.Clone();
-            newPos.X = _random.Next(safeArea.Left, safeArea.Right - GridConfig.IconSpacing);
-            newPos.Y = _random.Next(safeArea.Top, safeArea.Bottom - GridConfig.IconSpacing);
+            newPos.X = _random.Next(safeArea.Left, safeArea.Right - WordModeConstants.GridConfig.IconSpacing);
+            newPos.Y = _random.Next(safeArea.Top, safeArea.Bottom - WordModeConstants.GridConfig.IconSpacing);
             
             var validated = _validator.ValidatePosition(newPos.X, newPos.Y);
             newPos.X = validated.X;
