@@ -29,6 +29,7 @@ graph TB
         E --> E1[Full Chaos Mode]
         E --> E2[Sneaky Mode]
         E --> E3[Orbit Mode]
+        E --> E4[Word Mode]
         
         F --> F1[Config File]
     end
@@ -58,6 +59,7 @@ graph TB
 - **Full Chaos**: Randomizes all icon positions within screen bounds
 - **Sneaky**: Randomly swaps 2-4 icon positions
 - **Orbit**: Rotates icons in a circular pattern around screen center
+- **Word**: Arranges icons to spell out fun words using icon grid patterns
 
 ### 3. Safety Manager (`SafetyChecker`)
 - **IsFullscreenAppRunning()**: Detects if any application is in fullscreen mode
@@ -120,7 +122,8 @@ public enum RearrangementMode
 {
     FullChaos,
     Sneaky,
-    Orbit
+    Orbit,
+    Word
 }
 ```
 
@@ -147,10 +150,14 @@ Gnomicon/
 ├── MainForm.cs (hidden, hosts tray icon)
 ├── DesktopIconManager.cs (Windows API interop)
 ├── RearrangementEngine.cs (mode implementations)
-├── SafetyChecker.cs (fullscreen detection)
+├── RearrangementMode.cs (mode enum and extensions)
+├── WordModeConstants.cs (word list and letter patterns)
+├── WordPatternBuilder.cs (word position calculator)
+├── PositionValidator.cs (position validation)
+├── FullscreenDetector.cs (fullscreen detection)
 ├── SettingsManager.cs (config persistence)
-├── TrayManager.cs (system tray UI)
-└── NotificationManager.cs (toast notifications)
+├── NotificationManager.cs (toast notifications)
+└── InputDialog.cs (user input dialogs)
 ```
 
 ## Build Requirements
@@ -166,7 +173,7 @@ Stored at: `%LOCALAPPDATA%\Gnomicon\settings.json`
 ```json
 {
   "isEnabled": true,
-  "mode": "FullChaos",
+  "mode": "Word",
   "pauseUntil": null,
   "originalPositions": [
     {"index": 0, "x": 100, "y": 100, "name": "Recycle Bin"},

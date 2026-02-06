@@ -7,7 +7,8 @@ public enum RearrangementMode
 {
     FullChaos,
     Sneaky,
-    Orbit
+    Orbit,
+    Word
 }
 
 public static class RearrangementModeExtensions
@@ -19,6 +20,7 @@ public static class RearrangementModeExtensions
             RearrangementMode.FullChaos => "Full Chaos",
             RearrangementMode.Sneaky => "Sneaky",
             RearrangementMode.Orbit => "Orbit",
+            RearrangementMode.Word => "Word Mode",
             _ => mode.ToString()
         };
     }
@@ -30,6 +32,7 @@ public static class RearrangementModeExtensions
             RearrangementMode.FullChaos => "Randomizes all icon positions",
             RearrangementMode.Sneaky => "Swaps only 2-4 icon positions",
             RearrangementMode.Orbit => "Rotates icons in a circular pattern",
+            RearrangementMode.Word => "Arranges icons to spell out fun words",
             _ => "Unknown mode"
         };
     }

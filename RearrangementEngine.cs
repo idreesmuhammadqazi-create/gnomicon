@@ -7,11 +7,21 @@ public class RearrangementEngine
 {
     private readonly PositionValidator _validator;
     private readonly Random _random;
+    private WordPatternBuilder? _wordPatternBuilder;
 
     public RearrangementEngine(PositionValidator validator)
     {
         _validator = validator;
         _random = new Random();
+    }
+
+    private WordPatternBuilder WordPatternBuilder
+    {
+        get
+        {
+            _wordPatternBuilder ??= new WordPatternBuilder(_validator);
+            return _wordPatternBuilder;
+        }
     }
 
     public List<IconPosition> Rearrange(List<IconPosition> currentPositions, RearrangementMode mode)
@@ -21,6 +31,7 @@ public class RearrangementEngine
             RearrangementMode.FullChaos => FullChaos(currentPositions),
             RearrangementMode.Sneaky => Sneaky(currentPositions),
             RearrangementMode.Orbit => Orbit(currentPositions),
+            RearrangementMode.Word => WordRearrangement(currentPositions),
             _ => currentPositions
         };
     }
@@ -115,6 +126,41 @@ public class RearrangementEngine
         return newPositions;
     }
 
+    private List<IconPosition> WordRearrangement(List<IconPosition> positions)
+    {
+        if (positions.Count < 3)
+            return FullChaos(positions);
+
+        // Select a random word
+        var word = WordPatternBuilder.SelectRandomWord();
+        
+        // Check if we have enough icons
+        var iconsNeeded = WordPatternBuilder.CalculateTotalIconsNeeded(word);
+        
+        if (positions.Count < iconsNeeded)
+        {
+            // Try to find a fitting word
+            var fittingWord = WordPatternBuilder.FindFittingWord(positions.Count);
+            if (fittingWord != null)
+            {
+                word = fittingWord;
+                iconsNeeded = WordPatternBuilder.CalculateTotalIconsNeeded(word);
+            }
+        }
+
+        // Build the word pattern
+        var (wordPositions, extraPositions) = WordPatternBuilder.BuildWordPositions(word, positions);
+        
+        // Scatter extra icons randomly
+        var scatteredExtras = WordPatternBuilder.ScatterExtraIcons(extraPositions);
+        
+        // Combine word positions and scattered extras
+        var result = new List<IconPosition>(wordPositions);
+        result.AddRange(scatteredExtras);
+        
+        return result;
+    }
+
     public string GetRearrangementDescription(RearrangementMode mode, int iconCount)
     {
         return mode switch
@@ -122,6 +168,7 @@ public class RearrangementEngine
             RearrangementMode.FullChaos => $"Will randomly reposition all {iconCount} icons",
             RearrangementMode.Sneaky => $"Will subtly swap 2-{Math.Min(4, iconCount)} icon positions",
             RearrangementMode.Orbit => $"Will arrange {iconCount} icons in a circular pattern",
+            RearrangementMode.Word => $"Will arrange icons to spell out a fun word",
             _ => "Unknown mode"
         };
     }
